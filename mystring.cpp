@@ -1,366 +1,587 @@
-#include<iostream>
-#include <utility>
+#include <iostream>
 using namespace std;
-class mystring 
+
+unsigned int strlen(const char *);
+
+
+
+class String
 {
-	private:
-		char * str;
-	public:
-		mystring()
-		{
-			str=new char[1];
-			str[0]='\0';
-		}
-		mystring(const char *s)
-		{
-			if(s == nullptr)
-			{
-				str = new char[1];
-				str[0] = '\0';
-				return;
-			}
-			int len=0;
-			while(s[len]!='\0')
-			{
-				len++;
-			}
-			str = new char[len+1];
-			for(int i=0;i<=len;i++)
-			{
-				str[i]=s[i];
-			}
-		}
-		void display () const
-		{
-			cout<<str<<endl;
-		}
-		mystring(const mystring &obj)
-		{
-			int len = obj.length();
+    char *ptr;
 
-			str = new char[len + 1];
+public:
 
-			for(int i = 0; i <= len; i++)
-			{
-				str[i] = obj.str[i];
-			}
-		}
+    String()
+    {
+        ptr = new char[1];
+        ptr[0] = '\0';
+    }
 
-		mystring& operator=(const mystring &obj)
-		{
-			if(this == &obj)
-			{
-				return *this;
-			}
+    String(const char *p)
+    {
+        ptr = nullptr;
+        strcpy(*this, p);
+    }
 
-			int len = obj.length();
+    String(const String &rv)
+    {
+        ptr = nullptr;
+        strcpy(*this, rv);
+    }
 
-			char *temp = new char[len + 1];
+    String &operator=(const String &s)
+    {
+        if(this == &s)
+            return *this;
 
-			for(int i = 0; i <= len; i++)
-			{
-				temp[i] = obj.str[i];
-			}
+        strcpy(*this, s);
 
-			delete[] str;
-			str = temp;
+        return *this;
+    }
 
-			return *this;
-		}
-		~mystring()
-		{
-			delete[] str ;
-			cout <<" Destructor called !!!!" << endl;
-		}
-		mystring(mystring &&obj)
-		{
-			char *empty = new char[1];
-			empty[0] = '\0';
+    String operator+(const String &s)
+    {
+        String p;
 
-			str = obj.str;
-			obj.str = empty;
-		}
-		mystring& operator=(mystring &&obj)
-		{
-			if(this == &obj)
-			{
-				return *this;
-			}
+        strcpy(p, *this);
+        strcat(p, s);
 
-			char *empty = new char[1];
-			empty[0] = '\0';
+        return p;
+    }
 
-			delete[] str;
+    char &operator[](int i)
+    {
+        return ptr[i];
+    }
 
-			str = obj.str;
-			obj.str = empty;
+    ~String()
+    {
+        delete []ptr;
+    }
 
-			return *this;
-		}
-		int length() const
-		{
-			int len = 0;
+    bool operator>(const String &s)
+    {
+        return strcmp(*this, s) > 0;
+    }
 
-			while(str[len] != '\0')
-			{
-				len++;
-			}
+    bool operator<(const String &s)
+    {
+        return strcmp(*this, s) < 0;
+    }
 
-			return len;
-		}
-		bool empty() const
-		{
-			return str[0] == '\0';
-		}
-		mystring operator+(const mystring &obj) const
-		{
-			int len1 = length();
-			int len2 = obj.length();
+    bool operator>=(const String &s)
+    {
+        return strcmp(*this, s) >= 0;
+    }
 
-			mystring temp;
+    bool operator<=(const String &s)
+    {
+        return strcmp(*this, s) <= 0;
+    }
 
-			delete[] temp.str;
+    bool operator==(const String &s)
+    {
+        return strcmp(*this, s) == 0;
+    }
 
-			temp.str = new char[len1 + len2 + 1];
+    bool operator!=(const String &s)
+    {
+        return strcmp(*this, s) != 0;
+    }
 
-			int i = 0;
+    friend int strcmp(const String &, const String &);
 
-			for(; i < len1; i++)
-			{
-				temp.str[i] = str[i];
-			}
+    friend istream &operator>>(istream &, String &);
 
-			for(int j = 0; j < len2; j++)
-			{
-				temp.str[i + j] = obj.str[j];
-			}
+    friend ostream &operator<<(ostream &, const String &);
 
-			temp.str[i + len2] = '\0';
+    friend String &strcat(String &, const String &);
 
-			return temp;
-		}
-		bool operator==(const mystring &obj) const
-		{
-			int i = 0;
+    friend String &strcpy(String &, const String &);
 
-			while(str[i] != '\0' && obj.str[i] != '\0')
-			{
-				if(str[i] != obj.str[i])
-				{
-					return false;
-				}
+    friend String &strcpy(String &, const char *);
 
-				i++;
-			}
+    friend unsigned int strlen(const String &);
 
-			return str[i] == obj.str[i];
-		}
+    friend String &strncpy(String &, const String &, unsigned int);
 
-		bool operator!=(const mystring &obj) const
-		{
-			return !(*this == obj);
-		}
+    friend int strncmp(const String &, const String &, unsigned int);
 
-		char& operator[](int index)
-		{
-			return str[index];
-		}
+    friend String &strncat(String &, const String &, unsigned int);
 
-		const char& operator[](int index) const
-		{
-			return str[index];
-		}
+    friend void strupr(String &);
 
-		mystring& operator+=(const mystring &obj)
-		{
-			int len1 = length();
-			int len2 = obj.length();
+    friend void strlwr(String &);
 
-			char *temp = new char[len1 + len2 + 1];
+    friend void strrev(String &);
 
-			int i = 0;
+    friend char *strchr(const String &, char);
 
-			for(; i < len1; i++)
-			{
-				temp[i] = str[i];
-			}
+    friend char *strrchr(const String &, char);
 
-			for(int j = 0; j < len2; j++)
-			{
-				temp[i + j] = obj.str[j];
-			}
-
-			temp[len1 + len2] = '\0';
-
-			delete[] str;
-			str = temp;
-
-			return *this;
-		}
-		bool operator<(const mystring &obj) const
-		{
-			int i = 0;
-
-			while(str[i] != '\0' && obj.str[i] != '\0')
-			{
-				if(str[i] < obj.str[i])
-					return true;
-
-				if(str[i] > obj.str[i])
-					return false;
-
-				i++;
-			}
-
-			return str[i] < obj.str[i];
-		}
-		bool operator>(const mystring &obj) const
-		{
-			return obj < *this;
-		}
-		const char* c_str() const
-		{
-			return str;
-		}
-
-
-		int find(char ch) const
-		{
-			for(int i = 0; str[i] != '\0'; i++)
-			{
-				if(str[i] == ch)
-				{
-					return i;
-				}
-			}
-
-			return -1;
-		}
-
-		mystring substr(int start, int count) const
-		{
-			int len = length();
-
-			if(start < 0 || start >= len || count <= 0)
-			{
-				return mystring();
-			}
-
-			if(count > len - start)
-			{
-				count = len - start;
-			}
-
-			mystring temp;
-			delete[] temp.str;
-
-			temp.str = new char[count + 1];
-
-			for(int i = 0; i < count; i++)
-			{
-				temp.str[i] = str[start + i];
-			}
-
-			temp.str[count] = '\0';
-
-			return temp;
-		}
-
-
+    friend char *strstr(const String &, const char *);
 };
+
+//////////////////////////////////////
+
+istream &operator>>(istream &in, String &s)
+{
+    char temp[100];
+
+    in.getline(temp, 100);
+    strcpy(s, temp);
+
+    return in;
+}
+
+ostream &operator<<(ostream &out, const String &s)
+{
+    out << s.ptr;
+
+    return out;
+}
+
+String &strcat(String &s2, const String &s1)
+{
+    int i = 0;
+
+    int len = strlen(s2);
+    len += strlen(s1);
+
+    char *temp = new char[len + 1];
+
+    for(i = 0; s2.ptr[i] != '\0'; i++)
+        temp[i] = s2.ptr[i];
+
+    for(int j = 0; s1.ptr[j] != '\0'; i++, j++)
+        temp[i] = s1.ptr[j];
+
+    temp[i] = '\0';
+
+    strcpy(s2, temp);
+
+    delete []temp;
+
+    return s2;
+}
+
+String &strncat(String &s2, const String &s1, unsigned int n)
+{
+    int i = 0;
+
+    int len = strlen(s2);
+    len += n + 1;
+
+    char *temp = new char[len + 1];
+
+    for(i = 0; s2.ptr[i] != '\0'; i++)
+        temp[i] = s2.ptr[i];
+
+    for(int j = 0; s1.ptr[j] != '\0' && j < n; i++, j++)
+        temp[i] = s1.ptr[j];
+
+    temp[i] = '\0';
+
+    strcpy(s2, temp);
+
+    delete []temp;
+
+    return s2;
+}
+
+unsigned int strlen(const String &s1)
+{
+    int i;
+
+    for(i = 0; s1.ptr[i] != '\0'; i++);
+
+    return i;
+}
+
+unsigned int strlen(const char *s1)
+{
+    int i;
+
+    for(i = 0; s1[i] != '\0'; i++);
+
+    return i;
+}
+
+String &strcpy(String &s2, const String &s1)
+{
+    int i;
+
+    int len1 = strlen(s1);
+
+    delete []s2.ptr;
+
+    s2.ptr = new char[len1 + 1];
+
+    for(i = 0; s1.ptr[i] != '\0'; i++)
+        s2.ptr[i] = s1.ptr[i];
+
+    s2.ptr[i] = '\0';
+
+    return s2;
+}
+
+String &strncpy(String &s2, const String &s1, unsigned int n)
+{
+    int i;
+
+    delete []s2.ptr;
+
+    s2.ptr = new char[n + 1];
+
+    for(i = 0; s1.ptr[i] != '\0' && i < n; i++)
+        s2.ptr[i] = s1.ptr[i];
+
+    s2.ptr[i] = '\0';
+
+    return s2;
+}
+
+String &strcpy(String &s2, const char *s1)
+{
+    int i;
+
+    int len1 = strlen(s1);
+
+    delete []s2.ptr;
+
+    s2.ptr = new char[len1 + 1];
+
+    for(i = 0; s1[i] != '\0'; i++)
+        s2.ptr[i] = s1[i];
+
+    s2.ptr[i] = '\0';
+
+    return s2;
+}
+
+int strcmp(const String &s2, const String &s1)
+{
+    int i;
+
+    for(i = 0;
+        s2.ptr[i] != '\0' && s1.ptr[i] != '\0';
+        i++)
+    {
+        if(s2.ptr[i] != s1.ptr[i])
+            return s2.ptr[i] - s1.ptr[i];
+    }
+
+    return s2.ptr[i] - s1.ptr[i];
+}
+
+int strncmp(const String &s2, const String &s1, unsigned int n)
+{
+    int i;
+
+    for(i = 0;
+        s2.ptr[i] != '\0' &&
+        s1.ptr[i] != '\0' &&
+        i < n;
+        i++)
+    {
+        if(s2.ptr[i] != s1.ptr[i])
+            return s2.ptr[i] - s1.ptr[i];
+    }
+
+    if(i == n)
+        return 0;
+
+    return s2.ptr[i] - s1.ptr[i];
+}
+
+void strupr(String &s)
+{
+    int i = 0;
+
+    while(s.ptr[i] != '\0')
+    {
+        if(s.ptr[i] >= 'a' && s.ptr[i] <= 'z')
+            s.ptr[i] = (s.ptr[i] & 0xDF);
+
+        i++;
+    }
+}
+
+void strlwr(String &s)
+{
+    int i = 0;
+
+    while(s.ptr[i] != '\0')
+    {
+        if(s.ptr[i] >= 'A' && s.ptr[i] <= 'Z')
+            s.ptr[i] = (s.ptr[i] | 0x20);
+
+        i++;
+    }
+}
+
+void strrev(String &s)
+{
+    int len = strlen(s);
+
+    char temp;
+
+    int i, j;
+
+    for(i = 0, j = len - 1;
+        i < len / 2;
+        i++, j--)
+    {
+        temp = s[i];
+        s[i] = s[j];
+        s[j] = temp;
+    }
+}
+
+char *strchr(const String &s, char ch)
+{
+    int i = 0;
+
+    while(s.ptr[i] != '\0')
+    {
+        if(s.ptr[i] == ch)
+            return &s.ptr[i];
+
+        i++;
+    }
+
+    return nullptr;
+}
+
+char *strrchr(const String &s, char ch)
+{
+    int i = strlen(s) - 1;
+
+    while(i >= 0)
+    {
+        if(s.ptr[i] == ch)
+            return &s.ptr[i];
+
+        i--;
+    }
+
+    return nullptr;
+}
+
+char *strstr(const String &s, const char *p)
+{
+    int i = 0;
+    int j = 0;
+    int k = 0;
+
+    char *q;
+
+    while(s.ptr[i] != '\0')
+    {
+        if(s.ptr[i] == p[j])
+        {
+            q = &s.ptr[i];
+
+            k = i + 1;
+            j++;
+
+            if(p[j] == '\0')
+                return q;
+
+            while(p[j] != '\0')
+            {
+                if(s.ptr[k] != p[j])
+                {
+                    j = 0;
+                    break;
+                }
+                else
+                {
+                    k++;
+                    j++;
+                }
+
+                if(p[j] == '\0')
+                    return q;
+            }
+        }
+
+        i++;
+    }
+
+    return nullptr;
+}
+
+//////////////////////////////////////
 
 int main()
 {
+    // 1. Default and parameterized constructors
+    cout << "\n--- Constructors ---\n";
+
+    String v1;
+    String v2("hello");
 
 
-	// 1. Default Constructor
-	mystring s1;
-	cout << "Default Constructor: "<< endl;
-	s1.display();
+    // 2. Copy construction and assignment
+    cout << "\n--- Copy constructor ---\n";
 
-	// 2. Parameterized Constructor
-	mystring s2("Hello");
-	cout << "Parameterized Constructor: "<< endl;
-	s2.display();
+    String v3(v2);
 
-	// 3. Copy Constructor
-	mystring s3 = s2;
-	cout << "Copy Constructor: "<< endl ;
-	s3.display();
+    cout << "\n--- Assignment operator ---\n";
 
-	// 4. Copy Assignment
-	mystring s4;
-	s4 = s2;
-	cout << "Copy Assignment: "<< endl;
-	s4.display();
+    v1 = v2;
 
-	// 5. Length
-	cout << "Length: " << s2.length() << endl;
+    cout << "v1 = " << v1 << endl;
+    cout << "v2 = " << v2 << endl;
+    cout << "v3 = " << v3 << endl;
 
-	// 6. Empty
-	cout << "Is Empty: " << s1.empty() << endl;
 
-	// 7. Addition Operator
-	mystring s5(" World");
-	mystring s6 = s2 + s5;
-	cout << "Addition: "<< endl;
-	s6.display();
+    // 3. Concatenation using + operator
+    cout << "\n--- Addition operator ---\n";
 
-	// 8. Equality Operator
-	cout << "Equal: " << (s2 == s3) << endl;
+    String v4("Hello ");
+    String v5("World");
 
-	// 9. Not Equal Operator
-	cout << "Not Equal: " << (s2 != s5) << endl;
+    String v6 = v4 + v5;
 
-	// 10. Subscript Operator
-	cout << "Character: " << s2[1] << endl;
-	mystring s13("Embedded");
+    cout << "v6 = " << v6 << endl;
 
-	cout << "\nFirst Character: " << s13[0] << endl;
-	cout << "Third Character: " << s13[2] << endl;
 
-	// Modify a character
-	s13[0] = 'e';
+    // 4. Character access using [] operator
+    cout << "\n--- Subscript operator ---\n";
 
-	cout << "After Modification: ";
-	s13.display();
+    cout << "v6[0] = " << v6[0] << endl;
 
-	// 11. Append Operator
-	s2 += s5;
-	cout << "Append: "<< endl;
-	s2.display();
+    v6[0] = 'h';
 
-	// 12. Comparison Operators
-	mystring a("Apple");
-	mystring b("Banana");
+    cout << "After modification: " << v6 << endl;
 
-	cout << "Less Than: " << (a < b) << endl;
-	cout << "Greater Than: " << (a > b) << endl;
 
-	// 13. c_str()
-	cout << "C String: " << s2.c_str() << endl;
+    // 5. Input and output using stream operators
+    cout << "\n--- Stream operators ---\n";
 
-	// 14. Find
-	cout << "\nFind Existing Character: " << s2.find('W') << endl;
-	cout << "Find First Character: " << s2.find('H') << endl;
-	cout << "Find Missing Character: " << s2.find('Z') << endl;
+    String v7;
 
-	// 15. Substring
-	mystring s7 = s2.substr(0, 5);
-	cout << "Substring: "<<endl;
-	s7.display();
+    cout << "Enter a string: ";
+    cin >> v7;
 
-	// 16. Move Constructor
-	mystring s8 = std::move(s7);
-	cout << "Move Constructor: "<<endl;
-	s8.display();
+    cout << "You entered: " << v7 << endl;
 
-	// 17. Move Assignment
-	mystring s9;
-	s9 = std::move(s8);
-	cout << "Move Assignment: "<< endl;
-	s9.display();
 
-	return 0;
+    // 6. All comparison operators
+    cout << "\n--- Comparison operators ---\n";
+
+    String a("abc");
+    String b("def");
+    String c("abc");
+
+    cout << "a > b  : " << (a > b) << endl;
+    cout << "a < b  : " << (a < b) << endl;
+    cout << "a >= b : " << (a >= b) << endl;
+    cout << "a <= b : " << (a <= b) << endl;
+    cout << "a == c : " << (a == c) << endl;
+    cout << "a != b : " << (a != b) << endl;
+
+
+    // 7. All required friend string functions
+    cout << "\n--- Friend string functions ---\n";
+
+    String s1("Hello");
+    String s2("World");
+    String s3;
+
+
+    // strlen()
+    cout << "strlen(s1) = " << strlen(s1) << endl;
+
+
+    // strcpy()
+    strcpy(s3, s1);
+
+    cout << "After strcpy: " << s3 << endl;
+
+
+    // strncpy()
+    strncpy(s3, s2, 3);
+
+    cout << "After strncpy: " << s3 << endl;
+
+
+    // strcat()
+    strcat(s1, s2);
+
+    cout << "After strcat: " << s1 << endl;
+
+
+    // strncat()
+    String s4("Hello");
+
+    strncat(s4, s2, 3);
+
+    cout << "After strncat: " << s4 << endl;
+
+
+    // strcmp()
+    cout << "strcmp(s1, s2) = "
+         << strcmp(s1, s2) << endl;
+
+
+    // strncmp()
+    cout << "strncmp(s1, s2, 3) = "
+         << strncmp(s1, s2, 3) << endl;
+
+
+    // strupr()
+    String s5("hello world");
+
+    strupr(s5);
+
+    cout << "After strupr: " << s5 << endl;
+
+
+    // strlwr()
+    String s6("HELLO WORLD");
+
+    strlwr(s6);
+
+    cout << "After strlwr: " << s6 << endl;
+
+
+    // strrev()
+    String s7("hello");
+
+    strrev(s7);
+
+    cout << "After strrev: " << s7 << endl;
+
+
+    // strchr()
+    String s8("hello world");
+
+    char *p1 = strchr(s8, 'w');
+
+    if(p1 != nullptr)
+        cout << "strchr: " << p1 << endl;
+
+
+    // strrchr()
+    String s9("hello world");
+
+    char *p2 = strrchr(s9, 'l');
+
+    if(p2 != nullptr)
+        cout << "strrchr: " << p2 << endl;
+
+
+    // strstr()
+    String s10("hello world");
+
+    char *p3 = strstr(s10, "world");
+
+    if(p3 != nullptr)
+        cout << "strstr: " << p3 << endl;
+
+
+    return 0;
 }
-
